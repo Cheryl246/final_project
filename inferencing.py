@@ -1,41 +1,41 @@
 import streamlit as st
 import pickle
-from modelling import NetflixRecommender  # pastikan file class-nya bernama netflix_recommender.py
+from modelling import NetflixRecommender
 
 # --- Load preprocessed dataframe from pickle ---
 @st.cache_resource
 def load_model():
-    with open('netflix_df.pkl', 'rb') as f:
+    # Load DataFrame dari pickle
+    with open("netflix_df.pkl", "rb") as f:
         df = pickle.load(f)
-
-    model = NetflixRecommender("dummy_path.csv")  # path tidak dipakai, karena df akan kita inject langsung
+    
+    # Buat objek NetflixRecommender dan inject df
+    model = NetflixRecommender("dummy.csv")  # path tidak dipakai
     model.df = df
     model.build_model()
     return model
 
-# Load model once
 recommender = load_model()
 
 # --- Streamlit UI ---
-st.title("🎬 Netflix Movie Recommender")
-st.write("Rekomendasi film berdasarkan judul, genre, cast, dan sutradara.")
+st.title("🎬 Netflix Content-Based Recommender")
 
-# Dropdown atau text input
-selected_title = st.text_input("Pilih judul film:")
+# Text input judul
+selected_title = st.text_input("Masukkan judul film/series (case-sensitive):")
 
-# Tombol rekomendasi
-if st.button("Tampilkan Rekomendasi"):
-    recommendations = recommender.get_recommendations(selected_title, topn=5)
+# Tombol tampilkan
+if st.button("Tampilkan Rekomendasi") and selected_title:
+    result = recommender.get_recommendations(selected_title, topn=5)
 
-    if isinstance(recommendations, str):  
-        st.warning(recommendations)
+    # Jika hasil berupa DataFrame, tampilkan
+    if isinstance(result, str):
+        st.warning(result)  # kalau judul tidak ditemukan
     else:
-        st.subheader(f"Rekomendasi mirip dengan **{selected_title}**:")
-        for idx, row in recommendations.iterrows():
+        st.success(f"Rekomendasi mirip dengan: **{selected_title}**")
+        for _, row in result.iterrows():
             st.markdown(f"### 🎥 {row['title']} ({row['release_year']})")
-            st.markdown(f"**Tipe**: {row['type'].title()}")
-            st.markdown(f"**Genre**: {', '.join(row['genres'])}")
-            st.markdown(f"**Deskripsi**: {row['description']}")
+            st.markdown(f"**Tipe**: {row['type']}  \n**Genre**: {', '.join(row['genres'])}")
+            st.markdown(f"_{row['description']}_")
             st.markdown("---")
 
 
