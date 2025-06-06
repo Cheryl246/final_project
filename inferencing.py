@@ -21,20 +21,20 @@ recommender = load_model()
 st.title("🎬 Netflix Content-Based Recommender")
 
 # Text input judul
-selected_title = st.text_input("Masukkan judul film/series (case-sensitive):")
+selected_title = st.text_input("Enter title movie\tv shows:")
 
 # Tombol tampilkan
-if st.button("Tampilkan Rekomendasi") and selected_title:
+if st.button("Show Recommendation") and selected_title:
     result = recommender.get_recommendations(selected_title, topn=5)
 
     # Jika hasil berupa DataFrame, tampilkan
     if isinstance(result, str):
         st.warning(result)  # kalau judul tidak ditemukan
     else:
-        st.success(f"Rekomendasi mirip dengan: **{selected_title}**")
+        st.success(f"You might like this too: ")
         for _, row in result.iterrows():
             st.markdown(f"### 🎥 {row['title']} ({row['release_year']})")
-            st.markdown(f"**Tipe**: {row['type']}  \n**Genre**: {', '.join(row['genres'])}")
+            st.markdown(f"**Type**: {row['type']}  \n**Genre**: {', '.join(row['genres'])}")
             st.markdown(f"_{row['description']}_")
             st.markdown("---")
 
