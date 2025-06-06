@@ -26,7 +26,7 @@ class NetflixRecommender:
         if self.df is None:
             self.load_and_preprocess_data()
         
-        self.df['similarity'] = self.df.apply(self._create_soup, axis=1)
+        self.df['similarity'] = self.df.apply(self.create_similarity, axis=1)
         tfidf = TfidfVectorizer(stop_words='english', max_features=5000)
         tfidf_matrix = tfidf.fit_transform(self.df['similarity'])
         self.cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
