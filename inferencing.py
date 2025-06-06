@@ -1,6 +1,6 @@
 import streamlit as st
 import pickle
-from netflix_recommender import NetflixRecommender  # pastikan file class-nya bernama netflix_recommender.py
+from modelling import NetflixRecommender  # pastikan file class-nya bernama netflix_recommender.py
 
 # --- Load preprocessed dataframe from pickle ---
 @st.cache_resource
